@@ -2090,184 +2090,817 @@ function showMemoryResult(){
 
 /* =====================================================
    GAME 3
-   Ô CHỮ
+   Ô CHỮ KHÁM PHÁ
 ===================================================== */
 
-const wordData = {
+/*
+    GAME 3 gồm 10 câu.
 
-    answer:"KHITUE",
+    Luồng chơi:
 
-    display:"KHÍ QUYỂN",
+    Câu 1
+       ↓
+    Nhập đáp án
+       ↓
+    Kiểm tra / Xem đáp án
+       ↓
+    Hiện đáp án + giải thích
+       ↓
+    Câu tiếp theo →
+       ↓
+    ...
+       ↓
+    Câu 10
+       ↓
+    Kết quả
+*/
 
-    clue:
-        "Lớp không khí bao quanh Trái Đất, có vai trò quan trọng đối với sự sống."
 
-};
+const wordQuestions = [
 
+    {
+        answer: "KHÍ QUYỂN",
+
+        clue:
+            "Lớp không khí bao quanh Trái Đất, có vai trò quan trọng đối với sự sống.",
+
+        explain:
+            "Khí quyển là lớp không khí bao quanh Trái Đất, gồm nhiều loại khí khác nhau và có vai trò quan trọng đối với sự sống."
+    },
+
+
+    {
+        answer: "VỎ TRÁI ĐẤT",
+
+        clue:
+            "Lớp ngoài cùng của Trái Đất, nơi con người và nhiều sinh vật sinh sống.",
+
+        explain:
+            "Vỏ Trái Đất là lớp ngoài cùng của Trái Đất, có độ dày khác nhau ở các khu vực."
+    },
+
+
+    {
+        answer: "THỦY QUYỂN",
+
+        clue:
+            "Toàn bộ lớp nước trên Trái Đất, bao gồm nước ở biển, đại dương, sông, hồ, băng và nước ngầm.",
+
+        explain:
+            "Thủy quyển là toàn bộ lớp nước trên Trái Đất, bao gồm nước ở đại dương, biển, sông, hồ, băng hà, nước ngầm và hơi nước."
+    },
+
+
+    {
+        answer: "SINH QUYỂN",
+
+        clue:
+            "Bộ phận của Trái Đất có sự sống tồn tại.",
+
+        explain:
+            "Sinh quyển là nơi tồn tại của các sinh vật trên Trái Đất, bao gồm thực vật, động vật và vi sinh vật."
+    },
+
+
+    {
+        answer: "THỦY TRIỀU",
+
+        clue:
+            "Hiện tượng mực nước biển lên xuống theo chu kì.",
+
+        explain:
+            "Thủy triều là hiện tượng nước biển dâng lên và hạ xuống theo chu kì, chủ yếu do sức hút của Mặt Trăng và Mặt Trời."
+    },
+
+
+    {
+        answer: "DÒNG BIỂN",
+
+        clue:
+            "Sự chuyển động thành dòng tương đối ổn định của nước biển và đại dương.",
+
+        explain:
+            "Dòng biển là sự chuyển động thành dòng tương đối ổn định của nước biển và đại dương."
+    },
+
+
+    {
+        answer: "MẬT ĐỘ DÂN SỐ",
+
+        clue:
+            "Số người trung bình sinh sống trên một đơn vị diện tích.",
+
+        explain:
+            "Mật độ dân số cho biết số dân trung bình sống trên một đơn vị diện tích, thường tính bằng người/km²."
+    },
+
+
+    {
+        answer: "DÂN SỐ",
+
+        clue:
+            "Tổng số người sinh sống trên một lãnh thổ tại một thời điểm nhất định.",
+
+        explain:
+            "Dân số là tổng số người sinh sống trên một lãnh thổ tại một thời điểm nhất định."
+    },
+
+
+    {
+        answer: "THỜI TIẾT",
+
+        clue:
+            "Trạng thái của khí quyển tại một địa điểm trong khoảng thời gian ngắn.",
+
+        explain:
+            "Thời tiết là trạng thái của khí quyển tại một địa điểm trong một thời gian ngắn, biểu hiện qua nhiệt độ, mưa, gió, mây..."
+    },
+
+
+    {
+        answer: "PHÁT TRIỂN BỀN VỮNG",
+
+        clue:
+            "Sự phát triển đáp ứng nhu cầu hiện tại nhưng không làm ảnh hưởng đến khả năng đáp ứng nhu cầu của các thế hệ tương lai.",
+
+        explain:
+            "Phát triển bền vững là phát triển nhằm đáp ứng nhu cầu của hiện tại nhưng không làm tổn hại đến khả năng đáp ứng nhu cầu của các thế hệ tương lai."
+    }
+
+];
+
+
+let wordIndex = 0;
+
+let wordScore = 0;
+
+let wordAnswered = false;
+
+
+/* =====================================================
+   CHUẨN HÓA ĐÁP ÁN
+===================================================== */
+
+function normalizeWord(text){
+
+    return String(text)
+
+        .trim()
+
+        .normalize("NFD")
+
+        .replace(/[\u0300-\u036f]/g, "")
+
+        .replace(/đ/gi, "d")
+
+        .replace(/[^a-zA-Z0-9]/g, "")
+
+        .toUpperCase();
+
+}
+
+
+/* =====================================================
+   BẮT ĐẦU GAME 3
+===================================================== */
 
 function startWord(){
 
     gameTitle.textContent =
         "🧠 Ô chữ khám phá";
 
+    wordIndex = 0;
+
+    wordScore = 0;
+
+    wordAnswered = false;
+
+    renderWordQuestion();
+
+}
+
+
+/* =====================================================
+   HIỂN THỊ CÂU HỎI
+===================================================== */
+
+function renderWordQuestion(){
+
+    wordAnswered = false;
+
+    const item =
+        wordQuestions[wordIndex];
+
+
     gameContent.innerHTML = `
+
+        <div class="quiz-meta">
+
+            <div class="quiz-badge">
+
+                🧠 Câu
+                ${wordIndex + 1}/${wordQuestions.length}
+
+            </div>
+
+
+            <div class="quiz-badge">
+
+                ⭐ Điểm:
+                ${wordScore}
+
+            </div>
+
+        </div>
+
 
         <div class="clue">
 
-            <strong>🔎 Gợi ý</strong>
+            <strong>
+                🔎 Gợi ý
+            </strong>
 
             <br><br>
 
-            ${wordData.clue}
+            ${item.clue}
 
         </div>
+
 
         <div
             id="wordBoard"
             class="word-board"
         ></div>
 
+
         <input
+
             id="wordInput"
+
             class="word-input"
+
             type="text"
+
             placeholder="Nhập đáp án..."
+
             autocomplete="off"
+
         >
+
 
         <div style="text-align:center">
 
             <button
+
+                id="wordCheckButton"
+
                 class="play-btn"
+
                 type="button"
+
                 onclick="checkWord()"
+
             >
+
                 🔍 Kiểm tra
+
+            </button>
+
+
+            <button
+
+                id="wordRevealButton"
+
+                class="close-game"
+
+                type="button"
+
+                onclick="revealWord()"
+
+                style="margin-left:8px"
+
+            >
+
+                💡 Xem đáp án
+
             </button>
 
         </div>
 
+
         <div
+
             id="wordFeedback"
+
             class="feedback"
+
         ></div>
+
+
+        <div style="text-align:center">
+
+            <button
+
+                id="nextWordButton"
+
+                class="next-btn"
+
+                type="button"
+
+                onclick="nextWord()"
+
+            >
+
+                Câu tiếp theo →
+
+            </button>
+
+        </div>
 
     `;
 
+
     renderWordBoard();
 
+
+    /*
+        Cho phép nhấn Enter để kiểm tra.
+    */
+
+    document
+        .getElementById("wordInput")
+        .addEventListener("keydown",function(event){
+
+            if(event.key === "Enter"){
+
+                event.preventDefault();
+
+                checkWord();
+
+            }
+
+        });
+
+
+    /*
+        Tự động đưa con trỏ vào ô nhập.
+    */
+
+    document
+        .getElementById("wordInput")
+        .focus();
+
 }
 
 
-function normalizeText(text){
+/* =====================================================
+   TẠO CÁC Ô CHỮ
+===================================================== */
 
-    return text
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g,"")
-        .replace(/đ/gi,"d")
-        .replace(/\s+/g,"")
-        .toUpperCase();
-
-}
-
-
-function renderWordBoard(found=[]){
+function renderWordBoard(showAnswer = false){
 
     const board =
-        document.getElementById(
-            "wordBoard"
-        );
+        document.getElementById("wordBoard");
+
+
+    if(!board){
+        return;
+    }
+
 
     const answer =
-        normalizeText(wordData.display);
+        normalizeWord(
+            wordQuestions[wordIndex].answer
+        );
+
 
     board.innerHTML = `
 
         <div class="word-row">
 
-            ${answer.split("").map((letter,index)=>`
+            ${
+                answer
+                    .split("")
+                    .map(letter => `
 
-                <div
-                    class="letter ${
-                        found.includes(index)
-                        ? "found"
-                        : ""
-                    }"
-                >
-                    ${
-                        found.includes(index)
-                        ? letter
-                        : "•"
-                    }
-                </div>
+                        <div class="letter">
 
-            `).join("")}
+                            ${
+                                showAnswer
+                                ? letter
+                                : "•"
+                            }
+
+                        </div>
+
+                    `)
+                    .join("")
+            }
 
         </div>
+
     `;
 
 }
 
 
+/* =====================================================
+   KHÓA CÂU SAU KHI TRẢ LỜI
+===================================================== */
+
+function lockWordQuestion(){
+
+    const input =
+        document.getElementById("wordInput");
+
+
+    const checkButton =
+        document.getElementById(
+            "wordCheckButton"
+        );
+
+
+    const revealButton =
+        document.getElementById(
+            "wordRevealButton"
+        );
+
+
+    const nextButton =
+        document.getElementById(
+            "nextWordButton"
+        );
+
+
+    if(input){
+        input.disabled = true;
+    }
+
+
+    if(checkButton){
+        checkButton.disabled = true;
+    }
+
+
+    if(revealButton){
+        revealButton.disabled = true;
+    }
+
+
+    if(nextButton){
+
+        nextButton.classList.add("show");
+
+    }
+
+}
+
+
+/* =====================================================
+   KIỂM TRA ĐÁP ÁN
+===================================================== */
+
 function checkWord(){
+
+    /*
+        Nếu câu đã được trả lời
+        thì không cho kiểm tra lại.
+    */
+
+    if(wordAnswered){
+        return;
+    }
+
 
     const input =
         document.getElementById(
             "wordInput"
         );
 
+
     const feedback =
         document.getElementById(
             "wordFeedback"
         );
 
-    const answer =
-        normalizeText(
-            wordData.display
-        );
 
-    const user =
-        normalizeText(
+    const userAnswer =
+        normalizeWord(
             input.value
         );
 
-    if(!user){
+
+    /*
+        Không nhập gì.
+    */
+
+    if(!userAnswer){
 
         feedback.className =
             "feedback show bad";
 
-        feedback.textContent =
-            "⚠️ Hãy nhập đáp án trước.";
+        feedback.innerHTML =
+
+            "⚠️ Bạn chưa nhập đáp án. Hãy thử trả lời trước nhé.";
+
+        input.focus();
 
         return;
+
     }
 
-    if(user === answer){
 
-        renderWordBoard(
-            answer
-                .split("")
-                .map((_,i)=>i)
+    const correctAnswer =
+        normalizeWord(
+            wordQuestions[wordIndex].answer
         );
+
+
+    /*
+        Đánh dấu câu đã trả lời.
+    */
+
+    wordAnswered = true;
+
+
+    /*
+        Hiện toàn bộ đáp án.
+    */
+
+    renderWordBoard(true);
+
+
+    /*
+        Khóa ô nhập và nút kiểm tra.
+    */
+
+    lockWordQuestion();
+
+
+    /*
+        Xử lí đúng / sai.
+    */
+
+    if(userAnswer === correctAnswer){
+
+        wordScore++;
+
 
         feedback.className =
             "feedback show good";
 
-        feedback.innerHTML =
-            "🎉 Chính xác! Đáp án là <strong>KHÍ QUYỂN</strong>.";
 
-    }else{
+        feedback.innerHTML = `
+
+            <strong>
+                🎉 Chính xác!
+            </strong>
+
+            <br><br>
+
+            Đáp án:
+
+            <strong>
+                ${wordQuestions[wordIndex].answer}
+            </strong>
+
+            <br><br>
+
+            ${wordQuestions[wordIndex].explain}
+
+        `;
+
+    }
+
+    else{
 
         feedback.className =
             "feedback show bad";
 
-        feedback.textContent =
-            "✗ Chưa đúng. Hãy đọc lại gợi ý và thử lại.";
+
+        feedback.innerHTML = `
+
+            <strong>
+                ❌ Chưa chính xác!
+            </strong>
+
+            <br><br>
+
+            Đáp án đúng là:
+
+            <strong>
+                ${wordQuestions[wordIndex].answer}
+            </strong>
+
+            <br><br>
+
+            ${wordQuestions[wordIndex].explain}
+
+        `;
 
     }
 
 }
 
+
+/* =====================================================
+   XEM ĐÁP ÁN
+===================================================== */
+
+function revealWord(){
+
+    /*
+        Nếu đã trả lời rồi thì không xử lí lại.
+    */
+
+    if(wordAnswered){
+        return;
+    }
+
+
+    wordAnswered = true;
+
+
+    /*
+        Hiện toàn bộ chữ.
+    */
+
+    renderWordBoard(true);
+
+
+    /*
+        Khóa phần trả lời.
+    */
+
+    lockWordQuestion();
+
+
+    const feedback =
+        document.getElementById(
+            "wordFeedback"
+        );
+
+
+    feedback.className =
+        "feedback show";
+
+
+    feedback.innerHTML = `
+
+        <strong>
+            💡 Đáp án:
+        </strong>
+
+        <strong>
+            ${wordQuestions[wordIndex].answer}
+        </strong>
+
+        <br><br>
+
+        ${wordQuestions[wordIndex].explain}
+
+    `;
+
+}
+
+
+/* =====================================================
+   SANG CÂU TIẾP THEO
+===================================================== */
+
+function nextWord(){
+
+    /*
+        Chưa trả lời thì không cho qua câu.
+    */
+
+    if(!wordAnswered){
+
+        return;
+
+    }
+
+
+    /*
+        Nếu chưa phải câu cuối:
+        chuyển sang câu tiếp theo.
+    */
+
+    if(wordIndex < wordQuestions.length - 1){
+
+        wordIndex++;
+
+        renderWordQuestion();
+
+        return;
+
+    }
+
+
+    /*
+        Nếu đã hoàn thành câu 10:
+        hiện kết quả.
+    */
+
+    showWordFinal();
+
+}
+
+
+/* =====================================================
+   KẾT QUẢ Ô CHỮ
+===================================================== */
+
+function showWordFinal(){
+
+    let icon = "💪";
+
+    let message =
+        "Hãy thử lại để ghi nhớ các khái niệm tốt hơn!";
+
+
+    if(wordScore >= 9){
+
+        icon = "🏆";
+
+        message =
+            "Xuất sắc! Bạn nắm rất chắc các thuật ngữ Lịch sử và Địa lí 6.";
+
+    }
+
+    else if(wordScore >= 7){
+
+        icon = "🌟";
+
+        message =
+            "Rất tốt! Bạn đã ghi nhớ phần lớn các khái niệm.";
+
+    }
+
+    else if(wordScore >= 5){
+
+        icon = "👍";
+
+        message =
+            "Khá tốt! Hãy ôn lại một số thuật ngữ quan trọng.";
+
+    }
+
+
+    gameContent.innerHTML = `
+
+        <div class="result">
+
+            <div class="result-icon">
+
+                ${icon}
+
+            </div>
+
+
+            <h2>
+
+                Hoàn thành Ô chữ khám phá!
+
+            </h2>
+
+
+            <div class="score-big">
+
+                ${wordScore}/10
+
+            </div>
+
+
+            <p>
+
+                ${message}
+
+            </p>
+
+
+            <br>
+
+
+            <button
+
+                class="play-btn"
+
+                type="button"
+
+                onclick="startWord()"
+
+            >
+
+                🔄 Chơi lại
+
+            </button>
+
+        </div>
+
+    `;
+
+}
 
 /* =====================================================
    GAME 4
