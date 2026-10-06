@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học liệu số  – Lịch sử và Địa lí</title>
+    <style>
+        :root {
+            --ink: #1e293b;
+            --muted: #64748b;
+            --line: #e2e8f0;
+            --blue: #2563eb;
+            --purple: #7c3aed;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: var(--ink);
+            background: #f8fafc;
+            line-height: 1.6;
+            min-height: 100vh;
+            transition: background 0.4s ease;
+        }
+
+        /* --- HỌA TIẾT NỀN TRANG TRÍ CHÌM NGHỆ THUẬT --- */
+        /* ===============================
+           THEME LỊCH SỬ – VÀNG ĐỒNG TRẦM
+           Lấy cảm hứng từ trống đồng, giấy cổ
+           và sắc đồng/đất của không gian lịch sử.
+           =============================== */
+        body.theme-history {
+            background-color: #17110b;
+            background-image:
+                radial-gradient(circle at 18% 12%, rgba(214, 158, 65, 0.22) 0%, transparent 38%),
+                radial-gradient(circle at 88% 82%, rgba(118, 71, 25, 0.28) 0%, transparent 46%),
+                radial-gradient(circle at 50% 50%, rgba(255, 210, 100, 0.035) 0%, transparent 52%),
+                linear-gradient(115deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 100%);
+            background-size: auto, auto, auto, 140px 140px;
+            background-attachment: fixed;
+        }
+
+        /* ===============================
+           THEME ĐỊA LÍ – XANH NAVY/CYAN
+           Gần tinh thần giao diện mẫu: vũ trụ,
+           Trái Đất, quỹ đạo và mạng lưới bản đồ.
+           =============================== */
+        body.theme-geo {
+            background-color: #03172f;
+            background-image:
+                radial-gradient(circle at 18% 20%, rgba(16, 91, 180, 0.38) 0%, transparent 43%),
+                radial-gradient(circle at 88% 78%, rgba(11, 174, 210, 0.28) 0%, transparent 48%),
+                radial-gradient(circle at 62% 28%, rgba(71, 75, 185, 0.18) 0%, transparent 38%),
+                linear-gradient(125deg, rgba(70, 190, 255, 0.045) 1px, transparent 1px),
+                linear-gradient(35deg, rgba(70, 190, 255, 0.035) 1px, transparent 1px);
+            background-size: auto, auto, auto, 190px 190px, 190px 190px;
+            background-attachment: fixed;
+        }
+
+        /* Họa tiết lớn chìm toàn trang */
+        body.theme-history::before {
+            content: '🥁';
+            position: fixed;
+            left: -55px;
+            bottom: -55px;
+            font-size: 360px;
+            line-height: 1;
+            opacity: 0.035;
+            filter: grayscale(1) sepia(1);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body.theme-geo::before {
+            content: '🌎';
+            position: fixed;
+            right: -70px;
+            bottom: -70px;
+            font-size: 360px;
+            line-height: 1;
+            opacity: 0.035;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        button, input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- MÀN HÌNH ĐĂNG NHẬP --- */
+        .login {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 25px;
+            background: radial-gradient(circle at 15% 20%, #e0e7ff, transparent 40%),
+                        radial-gradient(circle at 85% 80%, #fef3c7, transparent 40%),
+                        #f1f5f9;
+        }
+
+        .login-card {
+            width: min(440px, 100%);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 28px;
+            padding: 40px 32px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .logo {
+            width: 76px;
+            height: 76px;
+            margin: 0 auto 20px;
+            border-radius: 22px;
+            display: grid;
+            place-items: center;
+            font-size: 38px;
+            background: linear-gradient(135deg, #e0f2fe, #ede9fe);
+            box-shadow: inset 0 2px 6px rgba(255,255,255,0.8);
+        }
+
+        .login-card h1 {
+            margin: 0 0 8px;
+            font-size: 26px;
+            color: #0f172a;
+        }
+
+        .login-card p {
+            color: var(--muted);
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .field {
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #334155;
+        }
+
+        .field input {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 12px 16px;
+            outline: none;
+            background: #ffffff;
+            transition: all 0.2s;
+        }
+
+        .field input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .start {
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            color: #fff;
+            font-weight: 800;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .start:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        /* --- THANH ĐIỀU HƯỚNG TRÊN CÙNG --- */
+        .top {
+            height: 70px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .brand-logo {
+            font-size: 26px;
+        }
+
+        .brand-title {
+            font-weight: 900;
+            color: #1e3a8a;
+            font-size: 16px;
+        }
+
+        .brand-sub {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chip {
+            background: #f1f5f9;
+            color: #334155;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            border: 1px solid #e2e8f0;
+        }
+
+        .logout {
+            border: none;
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .logout:hover {
+            background: #fee2e2;
+        }
+
+        /* --- NỘI DUNG CHÍNH --- */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
+        }
+
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 30px;
+            padding: 36px 40px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, #eff6ff, #f3e8ff);
+            border: 1px solid #dbeafe;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: 28px;
+            margin: 0 0 10px;
+            color: #1e293b;
+        }
+
+        .hero p {
+            color: var(--muted);
+            margin: 0;
+            max-width: 700px;
+            font-size: 15px;
+        }
+
+        .orb {
+            width: 120px;
+            height: 120px;
+            flex: none;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 60px;
+            background: radial-gradient(circle at 35% 30%, #ffffff, #dbeafe 60%, #bfdbfe);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.2);
+        }
+
+        /* --- BANNER MÔN HỌC --- */
+        .subject-hero {
+            position: relative;
+            overflow: hidden;
+            padding: 36px 40px;
+            border-radius: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+        }
+
+        .subject-hero.history-banner {
+            background:
+                radial-gradient(circle at 78% 50%, rgba(218, 164, 73, 0.18), transparent 27%),
+                linear-gradient(135deg, rgba(42, 27, 15, 0.98), rgba(91, 57, 25, 0.96));
+            border: 1px solid rgba(214, 158, 65, 0.42);
+            color: #f8e6b0;
+        }
+        .subject-hero.history-banner h1 { color: #ffe9a9; }
+        .subject-hero.history-banner p { color: #e7c982; }
+
+        .subject-hero.geo-banner {
+            background:
+                radial-gradient(circle at 78% 48%, rgba(24, 178, 231, 0.22), transparent 28%),
+                linear-gradient(135deg, rgba(3, 23, 47, 0.98), rgba(7, 66, 112, 0.96));
+            border: 1px solid rgba(57, 204, 255, 0.38);
+            color: #d9f7ff;
+        }
+        .subject-hero.geo-banner h1 { color: #f1fbff; }
+        .subject-hero.geo-banner p { color: #a9e8fa; }
+
+        /* Các chi tiết chìm phía sau banner */
+        .subject-hero.history-banner::before {
+            content: '🥁';
+            position: absolute;
+            right: 95px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 190px;
+            opacity: 0.075;
+            filter: grayscale(1) sepia(1);
+            pointer-events: none;
+        }
+        .subject-hero.history-banner::after {
+            content: '✦  •  ✦  •  ✦  •  ✦';
+            position: absolute;
+            left: 34px;
+            bottom: 12px;
+            color: rgba(255, 220, 135, 0.16);
+            letter-spacing: 12px;
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+        .subject-hero.geo-banner::before {
+            content: '🌎';
+            position: absolute;
+            right: 88px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 180px;
+            opacity: 0.09;
+            filter: saturate(0.75);
+            pointer-events: none;
+        }
+        .subject-hero.geo-banner::after {
+            content: '';
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            width: 250px;
+            height: 90px;
+            border: 1px solid rgba(76, 213, 255, 0.18);
+            border-radius: 50%;
+            transform: translateY(-50%) rotate(-18deg);
+            box-shadow: 0 0 0 30px rgba(76,213,255,0.025), 0 0 0 70px rgba(76,213,255,0.018);
+            pointer-events: none;
+        }
+
+        .subject-hero-content {
+            z-index: 2;
+            max-width: 750px;
+        }
+
+        .subject-hero h1 {
+            font-size: 30px;
+            margin: 0 0 8px;
+            font-weight: 900;
+        }
+
+        .subject-hero p {
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .subject-hero-deco {
+            font-size: 76px;
+            z-index: 1;
+            opacity: 0.9;
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3));
+        }
+
+        /* Thanh tiến trình */
+        .progress-box {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 800;
+            color: #334155;
+            margin-bottom: 10px;
+        }
+
+        .progress-line {
+            height: 12px;
+            background: #f1f5f9;
+            border-radius: 99px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .progress-line i {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, #d97706, #b45309);
+            border-radius: inherit;
+            transition: width 0.4s ease;
+        }
+        body.theme-geo .progress-line i {
+            background: linear-gradient(90deg, #059669, #047857);
+        }
+
+        /* --- LƯỚI TRANG CHỦ --- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            position: relative;
+            overflow: hidden;
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            padding: 30px;
+            min-height: 310px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
+
+        .card.history {
+            background: linear-gradient(145deg, #3a2415, #1f160e);
+            border-color: rgba(214, 158, 65, 0.38);
+            color: #f8e6b0;
+        }
+        .card.history:hover { border-color: #d6a449; box-shadow: 0 20px 45px rgba(122,78,28,0.24); }
+        .card.history .icon { background: rgba(214,158,65,0.14); color: #f0c76b; border: 1px solid rgba(214,158,65,0.2); }
+        .card.history h2 { color: #ffe9ad; }
+        .card.history p { color: #d8c18e; }
+        .card.history .enter { background: #a56b24; }
+        .card.history .enter:hover { background: #c58a36; }
+
+        .card.geo {
+            background: linear-gradient(145deg, #082d54, #061a34);
+            border-color: rgba(42, 194, 239, 0.34);
+            color: #e7f9ff;
+        }
+        .card.geo:hover { border-color: #35d4ff; box-shadow: 0 20px 45px rgba(13,135,190,0.22); }
+        .card.geo .icon { background: rgba(37, 194, 244, 0.12); color: #5fe2ff; border: 1px solid rgba(95,226,255,0.2); }
+        .card.geo h2 { color: #e9fbff; }
+        .card.geo p { color: #b2ddea; }
+        .card.geo .enter { background: #078ec6; }
+        .card.geo .enter:hover { background: #11b6e8; }
+
+    .card.games {
+    position: relative;
+    overflow: hidden;
+
+    /* Nền tím xanh hiện đại */
+    background:
+        radial-gradient(circle at 85% 20%, rgba(96, 165, 250, 0.28), transparent 28%),
+        radial-gradient(circle at 15% 85%, rgba(168, 85, 247, 0.22), transparent 30%),
+        linear-gradient(135deg, #17163d 0%, #30206b 52%, #155e9a 100%);
+
+    color: #ffffff;
+
+    border: 1px solid rgba(129, 140, 248, 0.45);
+
+    box-shadow:
+        0 18px 45px rgba(30, 27, 75, 0.30),
+        inset 0 1px 0 rgba(255,255,255,0.12);
+
+    transition: all 0.3s ease;
+}
+
+
+/* TIÊU ĐỀ */
+.card.games h2 {
+    color: #ffffff !important;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.20);
+}
+
+
+/* NỘI DUNG */
+.card.games p {
+    color: rgba(255,255,255,0.82) !important;
+}
+
+
+/* NÚT */
+.card.games .enter {
+    background: linear-gradient(135deg, #67e8f9, #38bdf8);
+    color: #082f49 !important;
+    border: none;
+    font-weight: 800;
+
+    box-shadow:
+        0 8px 20px rgba(56,189,248,0.25);
+
+    transition: all 0.25s ease;
+}
+
+
+/* RÊ CHUỘT VÀO NÚT */
+.card.games .enter:hover {
+    background: #ffffff;
+    color: #312e81 !important;
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 25px rgba(255,255,255,0.20);
+}
+
+
+/* RÊ CHUỘT VÀO TOÀN BỘ KHUNG */
+.card.games:hover {
+    transform: translateY(-6px);
+
+    box-shadow:
+        0 25px 55px rgba(30,27,75,0.38),
+        0 0 30px rgba(96,165,250,0.16);
+}
+.card.games .card-art {
+    opacity: 0.12;
+    filter: saturate(0.8);
+    transform: scale(1.15);
+}
+
+        .card-art {
+            position: absolute;
+            right: -15px;
+            bottom: -20px;
+            opacity: 0.1;
+            font-size: 110px;
+            pointer-events: none;
+        }
+
+        .icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+
+        .card h2 {
+            margin: 0 0 10px;
+            font-size: 20px;
+            color: #0f172a;
+        }
+
+        .card p {
+            color: var(--muted);
+            line-height: 1.6;
+            font-size: 14px;
+            margin: 0 0 20px;
+        }
+
+        .enter {
+            border: none;
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 13px;
+            align-self: flex-start;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* --- CHI TIẾT MÔN HỌC & BÀI HỌC --- */
+        .subject-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .back {
+            border: 1px solid rgba(255,255,255,0.25);
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-weight: 700;
+            color: #1e293b;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .back:hover { background: #ffffff; }
+
+        .search {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .search input {
+            flex: 1;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 14px;
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            outline: none;
+            font-size: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .search input:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+        }
+
+        .search button {
+            border: none;
+            border-radius: 14px;
+            padding: 0 24px;
+            font-weight: 800;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .find { background: #a96f26; color: #fff8e6; }
+        body.theme-geo .find { background: #078fc8; }
+
+        .clear { background: rgba(255, 255, 255, 0.9); color: #334155; }
+
+        .chapter {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+        }
+
+        .chapter-title {
+            padding: 16px 22px;
+            background: rgba(248, 250, 252, 0.9);
+            font-weight: 800;
+            color: #1e293b;
+            border-bottom: 1px solid var(--line);
+            font-size: 15px;
+        }
+
+        .lessons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 16px;
+        }
+
+        .lesson {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-align: left;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 14px;
+            transition: all 0.2s ease;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .lesson:hover {
+            border-color: #f59e0b;
+            background: #fffbeb;
+            transform: translateX(2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+        }
+        body.theme-geo .lesson:hover {
+            border-color: #059669;
+            background: #f0fdf4;
+        }
+
+        .num {
+            width: 36px;
+            height: 36px;
+            display: grid;
+            place-items: center;
+            flex: none;
+            border-radius: 10px;
+            background: #fef3c7;
+            color: #b45309;
+            font-weight: 900;
+            font-size: 12px;
+        }
+        body.theme-geo .num {
+            background: #dcfce7;
+            color: #047857;
+        }
+
+        .lesson-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .done {
+            margin-left: auto;
+            color: #059669;
+            font-weight: 900;
+            font-size: 16px;
+            background: #dcfce7;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+        }
+
+        /* ===============================
+           DANH SÁCH BÀI HỌC THEO CHỦ ĐỀ
+           Lịch sử: nền nâu/đồng, họa tiết chìm
+           Địa lí: navy/cyan, cảm giác bản đồ-vũ trụ
+           =============================== */
+        body.theme-history .chapter {
+            background: rgba(43, 28, 17, 0.94);
+            border-color: rgba(214, 158, 65, 0.22);
+        }
+        body.theme-history .chapter-title {
+            background: linear-gradient(90deg, rgba(115, 71, 27, 0.62), rgba(56, 34, 19, 0.72));
+            color: #f5d98d;
+            border-bottom-color: rgba(214,158,65,0.18);
+        }
+        body.theme-history .lesson {
+            position: relative;
+            overflow: hidden;
+            background: rgba(38, 25, 16, 0.92);
+            border-color: rgba(214, 158, 65, 0.18);
+            color: #f8e6b0;
+        }
+        body.theme-history .lesson::after {
+            content: '✦  •  ✦';
+            position: absolute;
+            right: 14px;
+            bottom: -3px;
+            color: rgba(214,158,65,0.075);
+            font-size: 30px;
+            letter-spacing: 5px;
+            pointer-events: none;
+        }
+        body.theme-history .lesson:hover {
+            border-color: #c99642;
+            background: linear-gradient(135deg, rgba(76,48,24,0.98), rgba(44,28,17,0.98));
+            transform: translateX(3px);
+        }
+        body.theme-history .num {
+            background: rgba(214,158,65,0.13);
+            color: #f1c968;
+            border: 1px solid rgba(214,158,65,0.18);
+        }
+        body.theme-history .lesson-name { color: #f5e2af; }
+        body.theme-history .done {
+            color: #f7d57e;
+            background: rgba(214,158,65,0.15);
+        }
+
+        body.theme-geo .chapter {
+            background: rgba(5, 29, 54, 0.93);
+            border-color: rgba(45, 192, 238, 0.2);
+        }
+        body.theme-geo .chapter-title {
+            background: linear-gradient(90deg, rgba(8,72,116,0.75), rgba(5,38,72,0.82));
+            color: #bceeff;
+            border-bottom-color: rgba(50,205,255,0.16);
+        }
+        body.theme-geo .lesson {
+            position: relative;
+            overflow: hidden;
+            background: rgba(4, 27, 51, 0.92);
+            border-color: rgba(49, 192, 239, 0.18);
+            color: #e6faff;
+        }
+        body.theme-geo .lesson::after {
+            content: '⌁  ·  ◌  ·  ⌁';
+            position: absolute;
+            right: 10px;
+            bottom: -8px;
+            color: rgba(55,205,255,0.08);
+            font-size: 38px;
+            letter-spacing: 5px;
+            pointer-events: none;
+        }
+        body.theme-geo .lesson:hover {
+            border-color: #28c9f5;
+            background: linear-gradient(135deg, rgba(7,63,103,0.98), rgba(4,32,62,0.98));
+            transform: translateX(3px);
+            box-shadow: 0 8px 22px rgba(10,158,215,0.12);
+        }
+        body.theme-geo .num {
+            background: rgba(45,198,245,0.12);
+            color: #63ddff;
+            border: 1px solid rgba(45,198,245,0.2);
+        }
+        body.theme-geo .lesson-name { color: #e2f8ff; }
+        body.theme-geo .done {
+            color: #65e6ff;
+            background: rgba(43,197,235,0.13);
+        }
+
+        .note {
+            margin-top: 24px;
+            padding: 18px 22px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #334155;
+            font-size: 13px;
+            line-height: 1.6;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            padding: 30px;
+        }
+
+        .history-watermark, .geo-watermark {
+            position: absolute;
+            pointer-events: none;
+            user-select: none;
+        }
+        .history-watermark {
+            right: 10%;
+            top: 4%;
+            font-size: 170px;
+            opacity: 0.055;
+            filter: grayscale(1) sepia(1);
+        }
+        .geo-watermark {
+            right: 8%;
+            top: 2%;
+            font-size: 170px;
+            opacity: 0.055;
+        }
+
+        @media(max-width: 850px) {
+            .grid { grid-template-columns: 1fr; }
+            .orb, .subject-hero-deco { display: none; }
+            .lessons { grid-template-columns: 1fr; }
+            .top { padding: 0 16px; }
+            .chip { display: none; }
+            main { padding: 20px 14px 40px; }
+            .hero, .subject-hero { padding: 24px 20px; }
+        }
+    </style>
+</head>
+<body id="page-body">
+
+    <!-- MÀN HÌNH ĐĂNG NHẬP -->
+    <div id="login" class="login">
+        <div class="login-card">
+            <div class="logo">🌍</div>
+            <h1>Học liệu số </h1>
+            <p>Lịch sử và Địa lí 6 – Khám phá tri thức qua hình ảnh, bản đồ, mô hình và trò chơi sinh động.</p>
+            <div class="field">
+                <label>Họ và tên học sinh</label>
+                <input id="name" placeholder="Ví dụ: Nguyễn Văn A">
+            </div>
+            <div class="field">
+                <label>Lớp học</label>
+                <input id="className" placeholder="Ví dụ: 6A1">
+            </div>
+            <button class="start" onclick="startLearning()">Bắt đầu học tập →</button>
+        </div>
+    </div>
+
+    <!-- THANH MENU TRÊN -->
+    <header id="top" class="top hidden">
+        <div class="brand" onclick="goHome()">
+            <div class="brand-logo">🌍</div>
+            <div>
+                <div class="brand-title">HỌC LIỆU SỐ </div>
+                <div class="brand-sub">Lịch sử & Địa lí lớp 6</div>
+            </div>
+        </div>
+        <div class="user">
+            <span id="user" class="chip"></span>
+            <button class="logout" onclick="logout()">Đăng xuất</button>
+        </div>
+    </header>
+
+    <!-- NỘI DUNG ĐỘNG -->
+    <main id="app" class="hidden"></main>
+
+    <!-- CHÂN TRANG -->
+    <footer id="foot" class="hidden">Học liệu số – Lịch sử và Địa lí 6</footer>
+
+    <!-- JAVASCRIPT XỬ LÝ GIAO DIỆN -->
+    <script>
+        const HISTORY = [
+            ['Chương 1. Vì sao phải học lịch sử', [['h01','Bài 1. Lịch sử và cuộc sống'],['h02','Bài 2. Dựa vào đâu để biết và phục dựng lại lịch sử?'],['h03','Bài 3. Thời gian trong lịch sử']]],
+            ['Chương 2. Xã hội nguyên thủy', [['h04','Bài 4. Nguồn gốc loài người'],['h05','Bài 5. Xã hội nguyên thủy'],['h06','Bài 6. Sự chuyển biến và phân hóa của xã hội nguyên thủy']]],
+            ['Chương 3. Xã hội cổ đại', [['h07','Bài 7. Ai Cập và Lưỡng Hà cổ đại'],['h08','Bài 8. Ấn Độ cổ đại'],['h09','Bài 9. Trung Quốc từ thời cổ đại đến thế kỉ VII'],['h10','Bài 10. Hy Lạp và La Mã cổ đại']]],
+            ['Chương 4. Đông Nam Á từ những thế kỉ tiếp giáp đầu Công nguyên đến thế kỉ X', [['h11','Bài 11. Các quốc gia sơ kì ở Đông Nam Á'],['h12','Bài 12. Sự hình thành và bước đầu phát triển của các vương quốc phong kiến ở Đông Nam Á'],['h13','Bài 13. Giao lưu văn hóa ở Đông Nam Á từ đầu Công nguyên đến thế kỉ X']]],
+            ['Chương 5. Việt Nam từ khoảng thế kỉ VII TCN đến đầu thế kỉ X', [['h14','Bài 14. Nhà nước Văn Lang - Âu Lạc'],['h15','Bài 15. Chính sách cai trị của các triều đại phong kiến phương Bắc và sự chuyển biến của xã hội Âu Lạc'],['h16','Bài 16. Các cuộc khởi nghĩa tiêu biểu giành độc lập trước thế kỉ X'],['h17','Bài 17. Cuộc đấu tranh bảo tồn và phát triển văn hóa dân tộc của người Việt'],['h18','Bài 18. Bước ngoặt lịch sử đầu thế kỉ X'],['h19','Bài 19. Vương quốc Chăm-pa từ thế kỉ II đến thế kỉ X'],['h20','Bài 20. Vương quốc Phù Nam']]]
+        ].map(x => ({ chapter: x[0], lessons: x[1] }));
+
+        const GEOGRAPHY = [
+            ['Chương 1. Bản đồ - phương tiện thể hiện bề mặt Trái Đất', [['g01','Bài 1. Hệ thống kinh, vĩ tuyến. Tọa độ địa lí'],['g02','Bài 2. Bản đồ. Một số lưới kinh, vĩ tuyến. Phương hướng trên bản đồ'],['g03','Bài 3. Tỉ lệ bản đồ. Tính khoảng cách thực tế dựa vào tỉ lệ bản đồ'],['g04','Bài 4. Kí hiệu và bảng chú giải bản đồ. Tìm đường đi trên bản đồ'],['g05','Bài 5. Lược đồ trí nhớ']]],
+            ['Chương 2. Trái Đất - Hành tinh của hệ Mặt Trời', [['g06','Bài 6. Trái Đất trong hệ Mặt Trời'],['g07','Bài 7. Chuyển động tự quay quanh trục của Trái Đất và hệ quả'],['g08','Bài 8. Chuyển động của Trái Đất quanh Mặt Trời và hệ quả'],['g09','Bài 9. Xác định phương hướng ngoài thực địa']]],
+            ['Chương 3. Cấu tạo của Trái Đất. Vỏ Trái Đất', [['g10','Bài 10. Cấu tạo của Trái Đất. Các mảng kiến tạo'],['g11','Bài 11. Quá trình nội sinh và quá trình ngoại sinh. Hiện tượng tạo núi'],['g12','Bài 12. Núi lửa và động đất'],['g13','Bài 13. Các dạng địa hình chính trên Trái Đất. Khoáng sản'],['g14','Bài 14. Thực hành: Đọc lược đồ địa hình tỉ lệ lớn và lát cắt địa hình đơn giản']]],
+            ['Chương 4. Khí hậu và biến đổi khí hậu', [['g15','Bài 15. Lớp vỏ khí của Trái Đất. Khí áp và gió'],['g16','Bài 16. Nhiệt độ không khí. Mây và mưa'],['g17','Bài 17. Thời tiết và khí hậu. Biến đổi khí hậu'],['g18','Bài 18. Thực hành: Phân tích biểu đồ nhiệt độ, lượng mưa']]],
+            ['Chương 5. Nước trên Trái Đất', [['g19','Bài 19. Thủy quyển và vòng tuần hoàn lớn của nước'],['g20','Bài 20. Sông và hồ. Nước ngầm và băng hà'],['g21','Bài 21. Biển và đại dương']]],
+            ['Chương 6. Đất và sinh vật trên Trái Đất', [['g22','Bài 22. Lớp đất trên Trái Đất'],['g23','Bài 23. Sự sống trên Trái Đất'],['g24','Bài 24. Rừng nhiệt đới'],['g25','Bài 25. Sự phân bố các đới thiên nhiên trên Trái Đất'],['g26','Bài 26. Thực hành: Tìm hiểu môi trường tự nhiên địa phương']]],
+            ['Chương 7. Con người và thiên nhiên', [['g27','Bài 27. Dân số và sự phân bố dân cư trên thế giới'],['g28','Bài 28. Mối quan hệ giữa con người và thiên nhiên'],['g29','Bài 29. Bảo vệ tự nhiên và khai thác thông minh các tài nguyên thiên nhiên vì sự phát triển bền vững'],['g30','Bài 30. Thực hành: Tìm hiểu mối quan hệ giữa con người và thiên nhiên ở địa phương']]]
+        ].map(x => ({ chapter: x[0], lessons: x[1] }));
+
+        const LESSON_BASE_PATH = 'bai-hoc/';
+        const GAME_SPACE_PATH = 'trochoi.html';
+        const STORAGE = 'hoclieu6_progress_v1';
+        const PROFILE = 'hoclieu6_profile_v1';
+
+        const $ = id => document.getElementById(id);
+
+        function esc(s) {
+            return String(s).replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
+        }
+
+        function progress() {
+            try { return JSON.parse(localStorage.getItem(STORAGE) || '{}'); } catch { return {}; }
+        }
+
+        function countDone() {
+            return Object.values(progress()).filter(Boolean).length;
+        }
+
+        function countSubjectDone(type) {
+            const p = progress();
+            const prefix = type === 'history' ? 'h' : 'g';
+            return Object.keys(p).filter(k => k.startsWith(prefix) && p[k]).length;
+        }
+
+        function startLearning() {
+            const name = $('name').value.trim();
+            const cl = $('className').value.trim();
+            if (!name || !cl) {
+                alert('Vui lòng nhập đầy đủ họ tên và lớp của bạn!');
+                return;
+            }
+            localStorage.setItem(PROFILE, JSON.stringify({ name, cl }));
+            showApp();
+        }
+
+        function showApp() {
+            $('login').classList.add('hidden');
+            $('top').classList.remove('hidden');
+            $('app').classList.remove('hidden');
+            $('foot').classList.remove('hidden');
+            const p = JSON.parse(localStorage.getItem(PROFILE) || '{}');
+            $('user').textContent = `${p.name || 'Học sinh'} • Lớp ${p.cl || ''}`;
+            home();
+        }
+
+        function logout() {
+            $('top').classList.add('hidden');$('app').classList.add('hidden');$('foot').classList.add('hidden');$('login').classList.remove('hidden');$('page-body').className = '';
+            $('name').value = '';$('className').value = '';
+        }
+
+        function goHome() {
+            home();
+        }
+
+        function home() {
+            $('page-body').className = ''; 
+            const d = countDone();
+            const pct = Math.round(d / 50 * 100);
+            $('app').innerHTML = `
+                <section class="hero">
+                    <div>
+                        <h1>Chào mừng em đến với Lịch sử và Địa lí lớp 6 👋</h1>
+                        <p>Khám phá kho tàng tri thức Lịch sử & Địa lí lớp 6 thông qua các bài học trực quan, mô hình tương tác và không gian trò chơi hấp dẫn.</p>
+                    </div>
+                    <div class="orb">🌏</div>
+                </section>
+
+                <div class="progress-box">
+                    <div class="progress-info">
+                        <span>Tiến trình hoàn thành tổng thể</span>
+                        <span>${d}/50 bài học (${pct}%)</span>
+                    </div>
+                    <div class="progress-line">
+                        <i style="width:${pct}%"></i>
+                    </div>
+                </div>
+
+                <section class="grid">
+                    <article class="card history" onclick="subject('history')">
+                        <div class="icon">🏺</div>
+                        <h2>🏛️ Lịch sử 6</h2>
+                        <p>Khám phá cội nguồn loài người, các nền văn minh cổ đại rực rỡ và tiến trình lịch sử hào hùng của dân tộc Việt Nam.</p>
+                        <button class="enter">Vào Lịch sử →</button>
+                        <div class="card-art">📜</div>
+                    </article>
+
+                    <article class="card geo" onclick="subject('geo')">
+                        <div class="icon">🪐</div>
+                        <h2>🌎 Địa lí 6</h2>
+                        <p>Tìm hiểu hành tinh xanh Trái Đất, bản đồ, hệ thống khí hậu, sông ngòi, đất đai, sinh vật và môi trường tự nhiên.</p>
+                        <button class="enter">Vào Địa lí →</button>
+                        <div class="card-art">🌍</div>
+                    </article>
+
+                    <article class="card games" onclick="openGames()">
+                        <div class="icon">🎮</div>
+                        <h2>🎮 Trò chơi tương tác</h2>
+                        <p>Vừa học vừa chơi với các mini-game trắc nghiệm, ô chữ và thử thách bản đồ thú vị giúp ghi nhớ kiến thức sâu hơn.</p>
+                        <button class="enter">Mở không gian chơi →</button>
+                        <div class="card-art">🏆</div>
+                    </article>
+                </section>
+
+                <div class="note">
+                    💡 <b>Mẹo học tập hiệu quả:</b> Hãy bấm vào từng bài học để đọc nội dung và hoàn thành các nhiệm vụ. Tiến trình học tập của em sẽ được tự động lưu lại để dễ dàng theo dõi mỗi khi quay lại!
+                </div>
+            `;
+        }
+
+        function subject(type) {
+            const isHist = type === 'history';
+            $('page-body').className = isHist ? 'theme-history' : 'theme-geo';
+
+            const data = isHist ? HISTORY : GEOGRAPHY;
+            const bannerClass = isHist ? 'history-banner' : 'geo-banner';
+            const decoIcon = isHist ? '📜' : '🪐';
+            const title = isHist ? '🏛️ Khám phá Môn Lịch sử 6' : '🌎 Khám phá Môn Địa lí 6';
+            const desc = isHist 
+                ? 'Hành trình ngược dòng thời gian về với cội nguồn văn minh nhân loại và hào khí dân tộc Việt Nam qua 20 bài học hấp dẫn.' 
+                : 'Du hành qua không gian để thấu hiểu các quy luật tự nhiên của hành tinh xanh, hệ thống bản đồ, khí hậu và sinh vật qua 30 bài học sinh động.';
+            
+            const total = isHist ? 20 : 30;
+            const doneCount = countSubjectDone(type);
+            const subPct = Math.round(doneCount / total * 100);
+
+            $('app').innerHTML = `
+                <div class="subject-head">
+                    <div style="font-size: 14px; color: #ffffff; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+                        📚 Hệ thống bài học chuẩn chương trình GDPT 2018
+                    </div>
+                    <button class="back" onclick="home()">← Quay lại Trang chủ</button>
+                </div>
+
+                <div class="subject-hero ${bannerClass}">
+                    <div class="subject-hero-content">
+                        <h1>${title}</h1>
+                        <p>${desc}</p>
+                    </div>
+                    <div class="subject-hero-deco">${decoIcon}</div>
+                </div>
+
+                <div class="progress-box">
+                    <div class="progress-info">
+                        <span>Tiến trình hoàn thành môn ${isHist ? 'Lịch sử' : 'Địa lí'}</span>
+                        <span>${doneCount}/${total} bài học (${subPct}%)</span>
+                    </div>
+                    <div class="progress-line">
+                        <i style="width:${subPct}%"></i>
+                    </div>
+                </div>
+
+                <div class="search">
+                    <input id="q" placeholder="Nhập tên bài học cần tìm..." oninput="filterLessons()">
+                    <button class="find" onclick="filterLessons()">Tìm kiếm</button>
+                    <button class="clear" onclick="$('q').value=''; filterLessons()">Xóa</button>
+                </div>
+
+                ${data.map(ch => `
+                    <section class="chapter">
+                        <div class="chapter-title">${esc(ch.chapter)}</div>
+                        <div class="lessons">
+                            ${ch.lessons.map(l => `
+                                <button class="lesson" data-title="${esc(l[1].toLowerCase())}" onclick="openLesson('${l[0]}','${type}')">
+                                    <span class="num">${l[0].slice(1)}</span>
+                                    <span class="lesson-name">${esc(l[1])}</span>
+                                    ${progress()[l[0]] ? '<span class="done">✓</span>' : ''}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </section>
+                `).join('')}
+
+                <div class="note">
+                    📌 <b>Hướng dẫn:</b> Nhấn vào bất kỳ bài học nào để bắt đầu nghiên cứu nội dung chi tiết. Các bài đã học xong sẽ hiển thị dấu tích xanh thành công.
+                </div>
+            `;
+        }
+
+        function filterLessons() {
+            const q = $('q').value.toLowerCase().trim();
+            document.querySelectorAll('.chapter').forEach(ch => {
+                let count = 0;
+                ch.querySelectorAll('.lesson').forEach(b => {
+                    const match = !q || b.dataset.title.includes(q);
+                    b.style.display = match ? 'flex' : 'none';
+                    if (match) count++;
+                });
+                ch.style.display = count ? 'block' : 'none';
+            });
+        }
+
+       function openLesson(id){
+    const lessonFiles = {
+        h01: "h01.html",
+	h02: "h02.html",
+	h03: "h03.html",
+	h04: "h04.html",
+	h05: "h05.html",
+	h06: "h06.html",
+	h07: "h07.html",
+	h08: "h08.html",
+	h09: "h09.html",
+	h10: "h10.html",
+	h11: "h11.html",
+	h12: "h12.html",
+	h13: "h13.html",
+	h14: "h14.html",
+	h15: "h15.html",
+	h16: "h16.html",
+	h17: "h17.html",
+	h18: "h18.html",
+	h19: "h19.html",
+	h20: "h20.html",
+
+	g01: "g01.html",
+	g02: "g02.html",
+	g03: "g03.html",
+	g04: "g04.html",
+	g05: "g05.html",
+	g05: "g05.html",
+	g06: "g06.html",
+	g07: "g07.html",
+	g08: "g08.html",
+	g09: "g09.html",
+	g10: "g10.html",
+	g11: "g11.html",
+	g12: "g12.html",
+	g13: "g13.html",
+	g14: "g14.html",
+	g15: "g15.html",
+	g16: "g16.html",
+	g17: "g17.html",
+	g18: "g18.html",
+	g19: "g19.html",
+	g20: "g20.html",
+	g21: "g21.html",
+	g22: "g22.html",
+	g23: "g23.html",
+	g24: "g24.html",
+	g25: "g25.html",
+	g26: "g26.html",
+	g27: "g27.html",
+	g28: "g28.html",
+	g29: "g29.html",
+	g30: "g30.html",
+    };
+
+    if (lessonFiles[id]) {
+        window.location.href = lessonFiles[id];
+    }
+}
+        function openGames() {
+            window.location.href = GAME_SPACE_PATH + '?from=portal';
+        }
+
+        window.addEventListener('storage', () => {
+            if (!$('app').classList.contains('hidden') &&$('app').querySelector('.progress-box')) {
+                home();
+            }
+        });
+
+        if (localStorage.getItem(PROFILE)) {
+            showApp();
+        }
+    </script>
+</body>
+</html>
